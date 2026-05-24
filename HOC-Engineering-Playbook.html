@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOC — Engineering Playbook &amp; Feature Board</title>
+<style>
+  :root {
+    --ink: #1a1f2e;
+    --ink-soft: #4a5468;
+    --ink-mute: #6b7280;
+    --paper: #ffffff;
+    --paper-soft: #f7f8fa;
+    --line: #e4e7ec;
+    --line-strong: #cfd4dc;
+    --accent: #c9941f;
+    --accent-soft: #fdf6e3;
+    --accent-deep: #8b6914;
+    --road: #2c3e50;
+    --green: #2f7d4f;
+    --green-soft: #e3f1e8;
+    --amber: #c9941f;
+    --amber-soft: #fdf2dc;
+    --red: #b73e3e;
+    --red-soft: #f7e1e1;
+    --blue: #2c5b8f;
+    --blue-soft: #e1ebf5;
+    --purple: #6b3e8a;
+    --purple-soft: #ece1f2;
+    --shadow: 0 1px 2px rgba(20,20,30,.04), 0 4px 12px rgba(20,20,30,.05);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
+                 "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--paper-soft);
+    margin: 0; line-height: 1.6; font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1100px; margin: 0 auto; background: var(--paper); box-shadow: var(--shadow); }
+
+  /* HERO */
+  .hero {
+    background:
+      linear-gradient(135deg, rgba(26,31,46,.96) 0%, rgba(44,62,80,.94) 100%),
+      repeating-linear-gradient(90deg, transparent 0, transparent 40px,
+        rgba(255,255,255,.06) 40px, rgba(255,255,255,.06) 80px);
+    color: #fff; padding: 56px 56px 48px;
+    border-bottom: 6px solid var(--accent);
+  }
+  .hero .eyebrow {
+    text-transform: uppercase; letter-spacing: .18em;
+    font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: 38px; line-height: 1.1; margin: 0 0 12px 0;
+    font-weight: 700; letter-spacing: -0.02em;
+  }
+  .hero .tagline { font-size: 17px; color: #d4dae5; max-width: 720px; margin: 0; }
+  .hero-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    padding-top: 26px; margin-top: 26px;
+    border-top: 1px solid rgba(255,255,255,.12);
+  }
+  .hero-meta .k {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .14em;
+    color: #9aa3b2; margin-bottom: 6px;
+  }
+  .hero-meta .v { font-size: 14px; color: #fff; font-weight: 500; }
+
+  /* NAV */
+  .nav {
+    background: var(--paper-soft); border-bottom: 1px solid var(--line);
+    padding: 16px 56px; position: sticky; top: 0; z-index: 10;
+    display: flex; gap: 20px; flex-wrap: wrap;
+  }
+  .nav a {
+    color: var(--ink-soft); text-decoration: none; font-size: 13px;
+    font-weight: 500; padding: 4px 0; border-bottom: 2px solid transparent;
+  }
+  .nav a:hover { color: var(--accent-deep); border-bottom-color: var(--accent); }
+  .nav .sep { color: var(--line-strong); }
+
+  main { padding: 48px 56px 64px; }
+  section { margin-bottom: 56px; scroll-margin-top: 70px; }
+
+  h2 {
+    font-size: 26px; font-weight: 700; letter-spacing: -0.015em;
+    margin: 0 0 8px 0; padding-bottom: 12px;
+    border-bottom: 2px solid var(--ink);
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  h2 .sec-num { color: var(--accent); font-weight: 700; font-size: 20px; }
+  .section-lede {
+    font-size: 15px; color: var(--ink-soft);
+    margin: 8px 0 24px 0; font-style: italic;
+  }
+  h3 {
+    font-size: 18px; font-weight: 600;
+    margin: 28px 0 12px 0; color: var(--ink); letter-spacing: -0.01em;
+  }
+  h4 {
+    font-size: 14px; font-weight: 600;
+    margin: 18px 0 6px 0; color: var(--ink);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  p { margin: 0 0 12px 0; }
+  ul, ol { padding-left: 22px; margin: 0 0 14px 0; }
+  li { margin: 4px 0; }
+  strong { font-weight: 600; color: var(--ink); }
+
+  code, .mono {
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 13px; background: var(--paper-soft);
+    padding: 2px 6px; border-radius: 3px; color: var(--accent-deep);
+  }
+  pre {
+    background: #0f1419; color: #d4dae5; padding: 18px 22px;
+    border-radius: 6px; overflow-x: auto;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 12.5px; line-height: 1.55; border-left: 3px solid var(--accent);
+    margin: 12px 0;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; font-size: 13.5px; }
+  th {
+    text-align: left; background: var(--paper-soft); padding: 10px 12px;
+    font-weight: 600; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--ink-soft);
+    border-bottom: 2px solid var(--line-strong);
+  }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+
+  .callout {
+    background: var(--accent-soft); border-left: 4px solid var(--accent);
+    padding: 16px 20px; border-radius: 0 4px 4px 0;
+    margin: 18px 0; font-size: 14px;
+  }
+  .callout strong { color: var(--accent-deep); }
+  .callout.warn { background: var(--red-soft); border-left-color: var(--red); }
+  .callout.warn strong { color: var(--red); }
+  .callout.good { background: var(--green-soft); border-left-color: var(--green); }
+  .callout.good strong { color: var(--green); }
+
+  /* FLOW */
+  .flow {
+    background: var(--ink); color: #fff;
+    padding: 28px 22px; border-radius: 8px; margin: 20px 0;
+  }
+  .flow .row { display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .flow-step {
+    flex: 1 1 140px; min-width: 130px;
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1);
+    border-top: 3px solid var(--accent); padding: 12px 10px; border-radius: 4px;
+  }
+  .flow-step .label { font-weight: 600; font-size: 13px; color: #fff; margin-bottom: 4px; }
+  .flow-step .desc {
+    font-size: 11px; color: #9aa3b2; line-height: 1.4;
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+  .flow-arrow { align-self: center; color: var(--accent); font-size: 16px; padding: 0 2px; }
+
+  /* FEATURE EPICS */
+  .epic {
+    border: 1px solid var(--line); border-radius: 8px;
+    margin-bottom: 20px; background: var(--paper);
+    overflow: hidden;
+  }
+  .epic-head {
+    background: var(--paper-soft); padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .epic-head .epic-id {
+    background: var(--ink); color: #fff; font-size: 11px;
+    font-weight: 700; padding: 3px 8px; border-radius: 3px;
+    font-family: monospace; letter-spacing: .04em;
+  }
+  .epic-head .epic-title {
+    font-size: 15px; font-weight: 600; color: var(--ink); flex: 1;
+  }
+  .epic-head .epic-stats {
+    font-size: 12px; color: var(--ink-mute);
+  }
+  .feature-list { padding: 4px 0; }
+  .feature {
+    display: grid;
+    grid-template-columns: 70px 1fr 90px 70px 110px 90px;
+    gap: 14px; padding: 10px 20px;
+    border-bottom: 1px solid var(--line);
+    align-items: center; font-size: 13.5px;
+  }
+  .feature:last-child { border-bottom: none; }
+  .feature:hover { background: rgba(201,148,31,.025); }
+  .feature .fid {
+    font-family: monospace; font-size: 12px; color: var(--accent-deep);
+    font-weight: 600;
+  }
+  .feature .ftitle { color: var(--ink); font-weight: 500; }
+  .feature .fdesc {
+    color: var(--ink-mute); font-size: 12px; margin-top: 2px;
+    font-weight: 400; line-height: 1.4;
+  }
+  .feature .fmeta { font-size: 11px; }
+
+  /* PILLS */
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .04em; white-space: nowrap;
+  }
+  .pill-mobile { background: var(--blue-soft); color: var(--blue); }
+  .pill-web    { background: var(--purple-soft); color: var(--purple); }
+  .pill-backend{ background: var(--green-soft); color: var(--green); }
+  .pill-infra  { background: var(--paper-soft); color: var(--ink-soft); border: 1px solid var(--line); }
+  .pill-shared { background: var(--amber-soft); color: var(--accent-deep); }
+
+  .pill-p0 { background: var(--red-soft); color: var(--red); }
+  .pill-p1 { background: var(--amber-soft); color: var(--accent-deep); }
+  .pill-p2 { background: var(--paper-soft); color: var(--ink-mute); border: 1px solid var(--line); }
+
+  .pill-s { background: var(--green-soft); color: var(--green); }
+  .pill-m { background: var(--amber-soft); color: var(--accent-deep); }
+  .pill-l { background: var(--red-soft); color: var(--red); }
+
+  .pill-open      { background: var(--paper-soft); color: var(--ink-soft); border: 1px solid var(--line); }
+  .pill-claimed   { background: var(--blue-soft); color: var(--blue); }
+  .pill-progress  { background: var(--amber-soft); color: var(--accent-deep); }
+  .pill-review    { background: var(--purple-soft); color: var(--purple); }
+  .pill-done      { background: var(--green-soft); color: var(--green); }
+
+  /* PRACTICE CARDS */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 16px 0; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
+  .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 6px; padding: 16px 18px;
+  }
+  .card h4 { margin-top: 0; color: var(--accent-deep); font-size: 11.5px; }
+  .card p { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li {
+    padding: 6px 0 6px 28px; position: relative;
+    border-bottom: 1px dashed var(--line);
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before {
+    content: "☐"; position: absolute; left: 6px; top: 6px;
+    color: var(--accent); font-size: 16px; line-height: 1;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px; margin: 12px 0 24px 0;
+    padding: 12px 16px; background: var(--paper-soft);
+    border-radius: 6px; font-size: 12px;
+  }
+  .legend-group { display: flex; align-items: center; gap: 6px; }
+  .legend-group strong { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-mute); }
+
+  /* DO / DON'T */
+  .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .do-dont .do, .do-dont .dont {
+    padding: 16px 18px; border-radius: 6px; font-size: 13.5px;
+  }
+  .do-dont .do { background: var(--green-soft); border-left: 4px solid var(--green); }
+  .do-dont .dont { background: var(--red-soft); border-left: 4px solid var(--red); }
+  .do-dont h4 { margin-top: 0; }
+  .do-dont .do h4 { color: var(--green); }
+  .do-dont .dont h4 { color: var(--red); }
+  .do-dont ul { margin: 0; padding-left: 20px; }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: #9aa3b2;
+    padding: 28px 56px; font-size: 13px; text-align: center;
+    border-top: 6px solid var(--accent);
+  }
+  footer strong { color: #fff; }
+
+  /* PRINT */
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; max-width: none; }
+    .nav { position: static; page-break-after: avoid; }
+    .hero { padding: 32px; }
+    main { padding: 24px 32px; }
+    .epic, .feature, .card { page-break-inside: avoid; }
+    pre { font-size: 9pt; }
+  }
+
+  /* MOBILE */
+  @media (max-width: 800px) {
+    .hero { padding: 36px 24px; }
+    .hero h1 { font-size: 28px; }
+    .hero-meta { grid-template-columns: 1fr 1fr; }
+    .nav { padding: 12px 20px; }
+    main { padding: 28px 20px; }
+    .grid-2, .grid-3, .do-dont { grid-template-columns: 1fr; }
+    .feature {
+      grid-template-columns: 1fr 1fr;
+      gap: 6px; padding: 12px 16px;
+    }
+    .feature .ftitle { grid-column: 1 / -1; }
+    .flow-arrow { transform: rotate(90deg); }
+    .flow .row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="eyebrow">Engineering Playbook &middot; For the build team</div>
+  <h1>Highway Operations Command — Build Plan &amp; Practices</h1>
+  <p class="tagline">
+    The feature board you pick from, and the engineering practices you follow.
+    Read this once on day one; revisit any section before you push.
+  </p>
+  <div class="hero-meta">
+    <div><div class="k">Team size</div><div class="v">2–3 engineers</div></div>
+    <div><div class="k">Branching</div><div class="v">Trunk + short PRs</div></div>
+    <div><div class="k">Cadence</div><div class="v">Daily async &middot; weekly sync</div></div>
+    <div><div class="k">Version</div><div class="v">1.0 &middot; 2026-05-24</div></div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#how">How to use this</a><span class="sep">·</span>
+  <a href="#workflow">Workflow</a><span class="sep">·</span>
+  <a href="#features">Feature board</a><span class="sep">·</span>
+  <a href="#branching">Branching</a><span class="sep">·</span>
+  <a href="#commits">Commits</a><span class="sep">·</span>
+  <a href="#prs">Pull requests</a><span class="sep">·</span>
+  <a href="#review">Code review</a><span class="sep">·</span>
+  <a href="#dod">Definition of Done</a><span class="sep">·</span>
+  <a href="#testing">Testing</a><span class="sep">·</span>
+  <a href="#standards">Standards</a><span class="sep">·</span>
+  <a href="#data">Data &amp; APIs</a><span class="sep">·</span>
+  <a href="#comms">Communication</a>
+</nav>
+
+<main>
+
+<!-- ============ HOW TO USE ============ -->
+<section id="how">
+  <h2><span class="sec-num">A</span>How to use this page</h2>
+  <p class="section-lede">A single source of truth for what to build and how to build it.</p>
+  <ol>
+    <li>Skim the <a href="#workflow">workflow</a> once — it's how every change moves from idea to <span class="mono">main</span>.</li>
+    <li>Open the <a href="#features">feature board</a>, find one tagged <span class="pill pill-open">Open</span> at your priority, and <strong>claim it</strong> (see <a href="#comms">Communication</a>).</li>
+    <li>Cut a branch (<a href="#branching">branching rules</a>), commit in the agreed format (<a href="#commits">commit rules</a>), open a PR (<a href="#prs">PR rules</a>).</li>
+    <li>Get one review, merge with squash, delete the branch. Move the feature to <span class="pill pill-done">Done</span>.</li>
+  </ol>
+  <div class="callout">
+    <strong>Rule of thumb:</strong> if you're unsure whether your change needs a discussion, open a <em>draft PR</em> early — it's the cheapest way to align before you spend a day going the wrong direction.
+  </div>
+</section>
+
+<!-- ============ WORKFLOW ============ -->
+<section id="workflow">
+  <h2><span class="sec-num">B</span>Team workflow at a glance</h2>
+  <p class="section-lede">Eight steps. Every change goes through them in order.</p>
+
+  <div class="flow">
+    <div class="row">
+      <div class="flow-step"><div class="label">1. Pick</div><div class="desc">open feature</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">2. Claim</div><div class="desc">tell the team</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">3. Branch</div><div class="desc">feat/F-XXX-slug</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">4. Build</div><div class="desc">small commits</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">5. PR</div><div class="desc">draft → ready</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">6. Review</div><div class="desc">1 approver</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">7. Merge</div><div class="desc">squash to main</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><div class="label">8. Close</div><div class="desc">mark done</div></div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <strong>Never push directly to <span class="mono">main</span>.</strong>
+    Main is protected. Every change — including a one-line typo fix — goes through a PR.
+  </div>
+</section>
+
+<!-- ============ FEATURE BOARD ============ -->
+<section id="features">
+  <h2><span class="sec-num">C</span>Feature board</h2>
+  <p class="section-lede">Pick a feature, claim it, ship it. Grouped by epic so two devs don't step on each other.</p>
+
+  <div class="legend">
+    <div class="legend-group"><strong>Layer</strong>
+      <span class="pill pill-mobile">Mobile</span>
+      <span class="pill pill-web">Web</span>
+      <span class="pill pill-backend">Backend</span>
+      <span class="pill pill-infra">Infra</span>
+      <span class="pill pill-shared">Shared</span>
+    </div>
+    <div class="legend-group"><strong>Priority</strong>
+      <span class="pill pill-p0">P0</span>
+      <span class="pill pill-p1">P1</span>
+      <span class="pill pill-p2">P2</span>
+    </div>
+    <div class="legend-group"><strong>Effort</strong>
+      <span class="pill pill-s">S 1–2d</span>
+      <span class="pill pill-m">M 3–5d</span>
+      <span class="pill pill-l">L 1–2w</span>
+    </div>
+    <div class="legend-group"><strong>Status</strong>
+      <span class="pill pill-open">Open</span>
+      <span class="pill pill-claimed">Claimed</span>
+      <span class="pill pill-progress">In&nbsp;progress</span>
+      <span class="pill pill-review">In&nbsp;review</span>
+      <span class="pill pill-done">Done</span>
+    </div>
+  </div>
+
+  <h3 style="margin-top:32px">Phase 1 · Foundation (Months 0–3)</h3>
+  <p style="font-size:14px;color:var(--ink-mute)">Goal: one pilot zone (50 km), end-to-end core flow working.</p>
+
+  <!-- EPIC E1 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E1</span>
+      <span class="epic-title">Platform &amp; Foundation</span>
+      <span class="epic-stats">5 features · sequential</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-001</span>
+        <div><div class="ftitle">Monorepo setup (pnpm + Turborepo)</div><div class="fdesc">apps/ packages/ services/ folders, shared tsconfig, prettier, eslint</div></div>
+        <span class="pill pill-infra">Infra</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-002</span>
+        <div><div class="ftitle">PostgreSQL + PostGIS bootstrap</div><div class="fdesc">Docker compose for local dev, migration tool, base schema, seed scripts</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-003</span>
+        <div><div class="ftitle">Auth service &amp; RBAC</div><div class="fdesc">Keycloak/Auth0 integration, role model (Owner/Engineer/Supervisor/Worker/QA), JWT middleware</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-004</span>
+        <div><div class="ftitle">API Gateway scaffold</div><div class="fdesc">Routing, rate limiting, structured request logging, error envelope</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-005</span>
+        <div><div class="ftitle">Mobile app shell (React Native + Expo)</div><div class="fdesc">Navigation, login, role-based home, offline DB stub, CI build pipeline</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC E2 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E2</span>
+      <span class="epic-title">Highway, Chainage &amp; Assets (Geo Service)</span>
+      <span class="epic-stats">4 features · depends on E1</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-010</span>
+        <div><div class="ftitle">Highway Segment data model + importer</div><div class="fdesc">PostGIS polyline, GeoJSON import CLI, segment-to-engineer mapping</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-011</span>
+        <div><div class="ftitle">Chainage lookup &amp; snap-to-segment</div><div class="fdesc">Given lat/lng → segment + km marker; reusable in mobile &amp; web</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-012</span>
+        <div><div class="ftitle">Asset master CRUD</div><div class="fdesc">Barrier, signboard, drain, reflector, marker — geo + attributes + photos</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-013</span>
+        <div><div class="ftitle">Map tile pipeline (MapLibre + OSM)</div><div class="fdesc">Self-hosted tile server config, basemap style, segment overlay tile</div></div>
+        <span class="pill pill-infra">Infra</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC E3 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E3</span>
+      <span class="epic-title">Incident (capture → triage)</span>
+      <span class="epic-stats">4 features · depends on E2</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-020</span>
+        <div><div class="ftitle">Incident service (API + state machine)</div><div class="fdesc">reported → triaged → linked-to-WO → resolved → closed; duplicate detection by proximity+category</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-021</span>
+        <div><div class="ftitle">Incident capture screen (mobile)</div><div class="fdesc">60-second form: GPS auto-snap, category picker, severity, mandatory photo, voice-to-text desc</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-022</span>
+        <div><div class="ftitle">Triage screen (engineer mobile)</div><div class="fdesc">Inbox of new incidents in my zone; quick-convert to work order</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-023</span>
+        <div><div class="ftitle">Incident map view (web)</div><div class="fdesc">Pins by severity, filter by category/age/engineer, click → detail drawer</div></div>
+        <span class="pill pill-web">Web</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC E4 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E4</span>
+      <span class="epic-title">Work Order</span>
+      <span class="epic-stats">4 features · depends on E3</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-030</span>
+        <div><div class="ftitle">Work Order service + state machine</div><div class="fdesc">open → planned → mobilised → in-progress → ready-for-qa → qa-pass → closed; pause/cancel paths</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-031</span>
+        <div><div class="ftitle">WO creation flow (mobile)</div><div class="fdesc">From incident → WO with category, supervisor, materials estimate, target date</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-032</span>
+        <div><div class="ftitle">WO detail screen (mobile)</div><div class="fdesc">SLA clock, status transitions, evidence gallery, audit log tab</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-033</span>
+        <div><div class="ftitle">WO list &amp; filters (web)</div><div class="fdesc">Server-paginated table, filter by status/zone/category/SLA-bucket, export CSV</div></div>
+        <span class="pill pill-web">Web</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC E5 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E5</span>
+      <span class="epic-title">Workforce &amp; Mobilisation</span>
+      <span class="epic-stats">3 features · depends on E4</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-040</span>
+        <div><div class="ftitle">Workforce service</div><div class="fdesc">Engineers, supervisors, workers, contractors — with assignments &amp; org tree</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-041</span>
+        <div><div class="ftitle">Crew assignment screen</div><div class="fdesc">Engineer picks supervisor + crew + vehicle for a WO</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-042</span>
+        <div><div class="ftitle">Mobilisation create + track</div><div class="fdesc">planned → in-transit → on-site → completed → returned, with live ETA</div></div>
+        <span class="pill pill-shared">Shared</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC E6 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E6</span>
+      <span class="epic-title">Photo Evidence</span>
+      <span class="epic-stats">4 features · used by E3/E4/E9</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-050</span>
+        <div><div class="ftitle">Evidence service + S3 uploader</div><div class="fdesc">Pre-signed URLs, chunked resumable upload, EXIF parse, hash, GPS cross-check</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-l">L 1–2w</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-051</span>
+        <div><div class="ftitle">In-app camera component</div><div class="fdesc">No gallery picker; auto GPS + timestamp; phase tag (before/during/after); compression</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-052</span>
+        <div><div class="ftitle">Upload queue with retry &amp; Wi-Fi preference</div><div class="fdesc">Persistent queue, exponential backoff, pause on cellular, visible progress</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-053</span>
+        <div><div class="ftitle">Evidence gallery (mobile + web)</div><div class="fdesc">Grouped by phase, EXIF metadata visible, tap to view, integrity badge</div></div>
+        <span class="pill pill-shared">Shared</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC E7 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E7</span>
+      <span class="epic-title">Offline &amp; Sync</span>
+      <span class="epic-stats">4 features · cross-cutting (mobile)</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-060</span>
+        <div><div class="ftitle">Local SQLite store + outbox pattern</div><div class="fdesc">Per-feature tables, outbox table for pending mutations, schema versioning</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-061</span>
+        <div><div class="ftitle">Sync engine — push (outbox drain)</div><div class="fdesc">Idempotency keys, batched POSTs, retry policy, error surfacing to user</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-062</span>
+        <div><div class="ftitle">Sync engine — pull (delta for my scope)</div><div class="fdesc">since-cursor API, scope = my zone &amp; my WOs, conflict log</div></div>
+        <span class="pill pill-shared">Shared</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-063</span>
+        <div><div class="ftitle">Conflict resolution policy</div><div class="fdesc">Last-write-wins per field; server-enforced state machine for transitions; conflict surfaced</div></div>
+        <span class="pill pill-shared">Shared</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC E8 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E8</span>
+      <span class="epic-title">GPS Tracking</span>
+      <span class="epic-stats">2 features · mobile</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-070</span>
+        <div><div class="ftitle">Tiered GPS service (foreground/background/off)</div><div class="fdesc">30s active on mobilisation; 5m background; off otherwise; battery + privacy aware</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-071</span>
+        <div><div class="ftitle">GPS track storage &amp; replay</div><div class="fdesc">Line geometry in PostGIS, dashboard replay control (timeline scrubber)</div></div>
+        <span class="pill pill-shared">Shared</span>
+        <span class="pill pill-p2">P2</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC E9 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E9</span>
+      <span class="epic-title">QA &amp; Closure</span>
+      <span class="epic-stats">3 features · depends on E4 + E6</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-080</span>
+        <div><div class="ftitle">Inspection service</div><div class="fdesc">pass / fail / conditional-pass with remarks; QA SLA timer; auto-reopen WO on fail</div></div>
+        <span class="pill pill-backend">Backend</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-081</span>
+        <div><div class="ftitle">QA mobile app screens</div><div class="fdesc">Inbox of "ready-for-qa", side-by-side photo compare, pass/fail buttons</div></div>
+        <span class="pill pill-mobile">Mobile</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-082</span>
+        <div><div class="ftitle">Closure workflow + audit pack</div><div class="fdesc">Engineer sign-off → WO closed, incident resolved, SLA clock stopped, evidence pack frozen</div></div>
+        <span class="pill pill-shared">Shared</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EPIC E10 -->
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">E10</span>
+      <span class="epic-title">Web Dashboard</span>
+      <span class="epic-stats">3 features · Owner-facing</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature">
+        <span class="fid">F-090</span>
+        <div><div class="ftitle">Dashboard shell (Next.js + auth)</div><div class="fdesc">Layout, sidebar, role gating, theming, error boundary</div></div>
+        <span class="pill pill-web">Web</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-s">S 1–2d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-091</span>
+        <div><div class="ftitle">Live map view</div><div class="fdesc">Segments coloured by SLA health, incident pins, live crew positions, asset overlays</div></div>
+        <span class="pill pill-web">Web</span>
+        <span class="pill pill-p0">P0</span>
+        <span class="pill pill-l">L 1–2w</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+      <div class="feature">
+        <span class="fid">F-092</span>
+        <div><div class="ftitle">Owner home dashboard</div><div class="fdesc">Open vs closed WOs, today's mobilisations, SLA breach count, emergency feed</div></div>
+        <span class="pill pill-web">Web</span>
+        <span class="pill pill-p1">P1</span>
+        <span class="pill pill-m">M 3–5d</span>
+        <span class="pill pill-open">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:40px">Phase 2 · Operationalise (Months 3–6)</h3>
+  <p style="font-size:14px;color:var(--ink-mute)">Goal: whole 200 km, all roles, SLA &amp; escalation live, NHAI reporting.</p>
+
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">P2</span>
+      <span class="epic-title">SLA, Escalation, Notifications, Reporting, Contractor &amp; Materials</span>
+      <span class="epic-stats">12 features · phased after Phase 1 pilot is validated</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature"><span class="fid">F-100</span><div><div class="ftitle">SLA policy master + per-WO timer engine</div><div class="fdesc">Category → response &amp; resolution time table; timers running in Redis</div></div><span class="pill pill-backend">Backend</span><span class="pill pill-p0">P0</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-101</span><div><div class="ftitle">Escalation ladder + auto-promotion</div><div class="fdesc">L1 (Engineer 2h) → L2 (Owner 4h) → L3 (Authority 24h); timers + notifications</div></div><span class="pill pill-backend">Backend</span><span class="pill pill-p0">P0</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-102</span><div><div class="ftitle">Notification service (FCM push + SMS)</div><div class="fdesc">Templated channels, retry, per-user preferences, audit of sent messages</div></div><span class="pill pill-backend">Backend</span><span class="pill pill-p0">P0</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-103</span><div><div class="ftitle">SLA dashboard (web)</div><div class="fdesc">Open WOs by green/amber/red bucket, breaches this week, repeat-breach segments</div></div><span class="pill pill-web">Web</span><span class="pill pill-p0">P0</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-104</span><div><div class="ftitle">Engineer performance dashboard</div><div class="fdesc">Per-engineer scorecard: WOs closed, avg closure, SLA %, QA pass %, evidence completeness</div></div><span class="pill pill-web">Web</span><span class="pill pill-p1">P1</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-105</span><div><div class="ftitle">Monthly NHAI report generator</div><div class="fdesc">PDF pack with photo evidence, SLA stats, incident summary; on-demand + scheduled</div></div><span class="pill pill-backend">Backend</span><span class="pill pill-p0">P0</span><span class="pill pill-l">L 1–2w</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-106</span><div><div class="ftitle">Daily work log screen (engineer mobile)</div><div class="fdesc">End-of-day summary, sign-off, flag issues for owner</div></div><span class="pill pill-mobile">Mobile</span><span class="pill pill-p1">P1</span><span class="pill pill-s">S 1–2d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-107</span><div><div class="ftitle">Emergency one-tap dispatch</div><div class="fdesc">Single button → notifies nearest crew + engineer + owner via push + SMS</div></div><span class="pill pill-shared">Shared</span><span class="pill pill-p0">P0</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-108</span><div><div class="ftitle">Escalation management screens</div><div class="fdesc">Tier, age, owner, target; ack / reassign / resolve; auto-promote on timeout</div></div><span class="pill pill-shared">Shared</span><span class="pill pill-p1">P1</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-109</span><div><div class="ftitle">Contractor module</div><div class="fdesc">Contractor master, workers attached, equipment roster, contractor scorecard</div></div><span class="pill pill-shared">Shared</span><span class="pill pill-p1">P1</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-110</span><div><div class="ftitle">Material issue &amp; consumption tracking</div><div class="fdesc">Stock levels, material-out per mobilisation, low-stock alerts</div></div><span class="pill pill-backend">Backend</span><span class="pill pill-p1">P1</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-111</span><div><div class="ftitle">Equipment booking calendar</div><div class="fdesc">JCB, compactor, generator availability per day; booking conflicts surfaced</div></div><span class="pill pill-web">Web</span><span class="pill pill-p2">P2</span><span class="pill pill-s">S 1–2d</span><span class="pill pill-open">Open</span></div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:40px">Phase 3 · Intelligence (Months 6–12)</h3>
+  <p style="font-size:14px;color:var(--ink-mute)">Goal: from record-keeping to decision support.</p>
+
+  <div class="epic">
+    <div class="epic-head">
+      <span class="epic-id">P3</span>
+      <span class="epic-title">AI assist, predictive maintenance, multi-contract, NHAI portal</span>
+      <span class="epic-stats">6 features · sequence after Phase 2 signals are stable</span>
+    </div>
+    <div class="feature-list">
+      <div class="feature"><span class="fid">F-200</span><div><div class="ftitle">AI auto-categorise incident</div><div class="fdesc">Photo + description → predicted category &amp; severity (engineer confirms)</div></div><span class="pill pill-backend">Backend</span><span class="pill pill-p1">P1</span><span class="pill pill-l">L 1–2w</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-201</span><div><div class="ftitle">Voice-to-structured incident</div><div class="fdesc">Engineer dictates; system extracts category, severity, location candidates</div></div><span class="pill pill-mobile">Mobile</span><span class="pill pill-p1">P1</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-202</span><div><div class="ftitle">Predictive maintenance signals</div><div class="fdesc">Weather + traffic + incident history → "segment X needs shoulder repair in 14 days"</div></div><span class="pill pill-backend">Backend</span><span class="pill pill-p2">P2</span><span class="pill pill-l">L 1–2w</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-203</span><div><div class="ftitle">Asset health scoring</div><div class="fdesc">Per-asset condition score from inspection history + age</div></div><span class="pill pill-backend">Backend</span><span class="pill pill-p2">P2</span><span class="pill pill-m">M 3–5d</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-204</span><div><div class="ftitle">Multi-contract / multi-tenant</div><div class="fdesc">Tenant scoping across all services; admin to create new contracts</div></div><span class="pill pill-shared">Shared</span><span class="pill pill-p1">P1</span><span class="pill pill-l">L 1–2w</span><span class="pill pill-open">Open</span></div>
+      <div class="feature"><span class="fid">F-205</span><div><div class="ftitle">NHAI external read-only portal</div><div class="fdesc">Authority logs in, sees their stretch, downloads monthly pack</div></div><span class="pill pill-web">Web</span><span class="pill pill-p1">P1</span><span class="pill pill-l">L 1–2w</span><span class="pill pill-open">Open</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BRANCHING ============ -->
+<section id="branching">
+  <h2><span class="sec-num">D</span>Branching</h2>
+  <p class="section-lede">One feature, one branch, one PR, one squash-merge. Branches are cheap; long-lived branches are not.</p>
+
+  <h3>Branch naming</h3>
+  <pre><code>&lt;type&gt;/&lt;feature-id&gt;-&lt;short-slug&gt;
+
+# examples
+feat/F-020-incident-service
+feat/F-051-in-app-camera
+fix/F-030-wo-state-machine-pause-bug
+chore/F-001-bump-turbo-2.0
+docs/playbook-update-pr-template
+spike/realtime-map-websocket-vs-sse</code></pre>
+
+  <table>
+    <thead><tr><th>Prefix</th><th>Use for</th></tr></thead>
+    <tbody>
+      <tr><td><span class="mono">feat/</span></td><td>New feature or significant new behaviour</td></tr>
+      <tr><td><span class="mono">fix/</span></td><td>Bug fix in existing behaviour</td></tr>
+      <tr><td><span class="mono">chore/</span></td><td>Tooling, deps, config — no user-facing change</td></tr>
+      <tr><td><span class="mono">refactor/</span></td><td>Code restructuring without behaviour change</td></tr>
+      <tr><td><span class="mono">docs/</span></td><td>Documentation only</td></tr>
+      <tr><td><span class="mono">spike/</span></td><td>Throwaway exploration; spikes are <em>not</em> merged</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Rules</h3>
+  <ul>
+    <li>Branch off the <strong>latest <span class="mono">main</span></strong>, not someone else's feature branch.</li>
+    <li>Keep branches <strong>short-lived (≤ 5 working days)</strong>. If longer, split the feature.</li>
+    <li>Rebase on <span class="mono">main</span> daily if you're going to take more than a day, to surface conflicts early.</li>
+    <li>Delete the branch immediately after merge (the GitHub setting will offer to do this for you).</li>
+    <li>Never reuse a branch name — once merged, that name is gone.</li>
+  </ul>
+</section>
+
+<!-- ============ COMMITS ============ -->
+<section id="commits">
+  <h2><span class="sec-num">E</span>Commits</h2>
+  <p class="section-lede">Conventional Commits. Small, focused, present-tense. The history is read more than it's written.</p>
+
+  <h3>Format</h3>
+  <pre><code>&lt;type&gt;(&lt;scope&gt;): &lt;short summary, imperative mood, lowercase, no trailing period&gt;
+
+[optional body — wrap at 72 cols, explain the WHY, not the WHAT]
+
+[optional footer — refs F-XXX, BREAKING CHANGE: ...]</code></pre>
+
+  <h3>Examples</h3>
+  <pre><code>feat(incident): add duplicate detection by proximity + category
+
+Two incidents within 50m and same category within 1h
+are flagged as potential duplicates. Engineer can confirm
+or split.
+
+Refs F-020
+
+---
+
+fix(wo): prevent close on paused work order
+
+Previously the closure handler ignored the paused state;
+this caused phantom-closed WOs in the dashboard.
+
+Refs F-030
+
+---
+
+chore(deps): bump expo to 50.0.7</code></pre>
+
+  <h3>Types</h3>
+  <p><span class="mono">feat</span> · <span class="mono">fix</span> · <span class="mono">chore</span> · <span class="mono">refactor</span> · <span class="mono">docs</span> · <span class="mono">test</span> · <span class="mono">perf</span> · <span class="mono">build</span> · <span class="mono">ci</span></p>
+
+  <div class="do-dont">
+    <div class="do">
+      <h4>Do</h4>
+      <ul>
+        <li>Commit often — every logical step (a passing test, a working module).</li>
+        <li>Write the message <em>before</em> staging — it forces clarity.</li>
+        <li>Reference the feature ID — it links the commit to the feature board.</li>
+      </ul>
+    </div>
+    <div class="dont">
+      <h4>Don't</h4>
+      <ul>
+        <li>Don't squash 800 lines of unrelated work into one commit.</li>
+        <li>Don't write <span class="mono">fix stuff</span>, <span class="mono">wip</span>, or <span class="mono">final</span>.</li>
+        <li>Don't commit commented-out code, dead branches, or <span class="mono">console.log</span>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRS ============ -->
+<section id="prs">
+  <h2><span class="sec-num">F</span>Pull requests</h2>
+  <p class="section-lede">A PR is a conversation about a change. Make it easy for the reviewer to say yes.</p>
+
+  <h3>Size</h3>
+  <ul>
+    <li>Target <strong>≤ 400 lines changed</strong> (excluding lockfiles, generated code, snapshots).</li>
+    <li>Above 400, split. Above 800, the reviewer can reject on size alone.</li>
+    <li>If the feature is genuinely large, ship it as a sequence of PRs behind a feature flag.</li>
+  </ul>
+
+  <h3>PR title</h3>
+  <pre><code>&lt;type&gt;(&lt;scope&gt;): &lt;summary&gt;   [F-XXX]
+
+# examples
+feat(incident): add capture screen with offline support   [F-021]
+fix(evidence): retry chunked upload on 503                [F-052]</code></pre>
+
+  <h3>PR description template</h3>
+  <pre><code>## What
+&lt;one-paragraph summary of the change&gt;
+
+## Why
+&lt;the user-visible or operational reason — link the feature ID&gt;
+Refs: F-XXX
+
+## How
+&lt;the approach in 3-5 bullets — call out any non-obvious decisions&gt;
+
+## Screenshots / Recordings
+&lt;mobile + web screenshots for any UI change; before + after for fixes&gt;
+
+## Test plan
+- [ ] Unit tests added / updated
+- [ ] Integration test added / updated
+- [ ] Manually tested on iOS / Android / web
+- [ ] Verified offline → online sync
+- [ ] DB migration is reversible (if applicable)
+
+## Risk &amp; rollback
+&lt;what could break, and how do we roll back&gt;</code></pre>
+
+  <h3>PR lifecycle</h3>
+  <ol>
+    <li><strong>Open as draft</strong> as soon as you have something compilable — the reviewer can sanity-check direction early.</li>
+    <li>Push commits as you go; mark <strong>Ready for review</strong> when CI is green and the description is filled in.</li>
+    <li>Address review comments by <em>new commits</em> (not force-push, until ready to merge).</li>
+    <li>Once approved + CI green, the <strong>author</strong> merges. Use <strong>Squash and merge</strong>. The squashed title becomes the merge commit subject — re-check it.</li>
+    <li>Delete the branch.</li>
+  </ol>
+
+  <div class="callout">
+    <strong>Required to merge:</strong> 1 approving review · all CI checks green · no unresolved review threads · branch up-to-date with <span class="mono">main</span>.
+  </div>
+</section>
+
+<!-- ============ CODE REVIEW ============ -->
+<section id="review">
+  <h2><span class="sec-num">G</span>Code review</h2>
+  <p class="section-lede">A review is a gift to the author and to the codebase. It is not gatekeeping.</p>
+
+  <h3>Service levels</h3>
+  <table>
+    <thead><tr><th>PR size</th><th>First review within</th></tr></thead>
+    <tbody>
+      <tr><td>≤ 100 lines</td><td>4 working hours</td></tr>
+      <tr><td>≤ 400 lines</td><td>1 working day</td></tr>
+      <tr><td>&gt; 400 lines</td><td>Author should split — but if accepted: 2 working days</td></tr>
+    </tbody>
+  </table>
+
+  <h3>What a reviewer looks for</h3>
+  <ul>
+    <li><strong>Correctness</strong> — does it do what the PR says? Did you check edge cases?</li>
+    <li><strong>Tests</strong> — meaningful, not just coverage padding.</li>
+    <li><strong>Boundaries</strong> — does this leak responsibility across services? Cross-service DB queries are a red flag.</li>
+    <li><strong>Migrations</strong> — reversible? Safe on a non-empty table?</li>
+    <li><strong>Security</strong> — input validation at the boundary, no secrets in code, no SQL string interpolation.</li>
+    <li><strong>Performance</strong> — N+1 queries, unbounded lists, missing indexes.</li>
+    <li><strong>Naming &amp; readability</strong> — would a teammate cold-read this in 6 months?</li>
+  </ul>
+
+  <h3>Comment etiquette</h3>
+  <p>Use prefixes to signal severity, so the author knows what's blocking vs. taste:</p>
+  <ul>
+    <li><strong><span class="mono">blocking:</span></strong> must be addressed before merge.</li>
+    <li><strong><span class="mono">consider:</span></strong> suggestion, author's call.</li>
+    <li><strong><span class="mono">nit:</span></strong> style/minor; ignore freely.</li>
+    <li><strong><span class="mono">question:</span></strong> I don't understand — please explain.</li>
+    <li><strong><span class="mono">praise:</span></strong> this is nicely done. (Use these too — reviews shouldn't be only criticism.)</li>
+  </ul>
+</section>
+
+<!-- ============ DEFINITION OF DONE ============ -->
+<section id="dod">
+  <h2><span class="sec-num">H</span>Definition of Done</h2>
+  <p class="section-lede">A feature isn't done when the code compiles. It's done when this list is satisfied.</p>
+
+  <ul class="checklist">
+    <li>Acceptance criteria of the feature card are met.</li>
+    <li>Unit tests cover the new logic; existing tests still pass.</li>
+    <li>Integration test added for any new API endpoint or state transition.</li>
+    <li>Manually verified on the target platform (iOS &amp; Android for mobile; Chrome + Safari for web).</li>
+    <li>For mobile: offline path verified (capture offline → sync online → server state correct).</li>
+    <li>DB migrations are reversible and run cleanly on a copy of dev data.</li>
+    <li>API contract change is reflected in OpenAPI spec; SDK regenerated.</li>
+    <li>Inline docs/comments only where the WHY is non-obvious; no decorative comments.</li>
+    <li>No new linter or type-check warnings.</li>
+    <li>Telemetry (logs/metrics) added for any new failure mode worth alerting on.</li>
+    <li>Feature flag added if the change is risky or partial.</li>
+    <li>PR description filled in; screenshots attached for UI; risk &amp; rollback noted.</li>
+    <li>One approving review; all CI checks green.</li>
+    <li>Feature moved to <span class="pill pill-done">Done</span> on the board; teammates notified in the daily async update.</li>
+  </ul>
+</section>
+
+<!-- ============ TESTING ============ -->
+<section id="testing">
+  <h2><span class="sec-num">I</span>Testing</h2>
+  <p class="section-lede">Test the thing that would page someone at 2am if it broke. Don't test what the framework already guarantees.</p>
+
+  <div class="grid-3">
+    <div class="card">
+      <h4>Unit (fast, many)</h4>
+      <p>Pure functions, state machines, validators, geo math. Vitest (web/backend) &amp; Jest (mobile). Should run in &lt; 30 s locally.</p>
+    </div>
+    <div class="card">
+      <h4>Integration (medium, fewer)</h4>
+      <p>API + DB + queue in a real Postgres &amp; Redis (Docker). One per endpoint family. Run on every PR.</p>
+    </div>
+    <div class="card">
+      <h4>End-to-end (slow, very few)</h4>
+      <p>Playwright for web; Detox or Maestro for mobile. Cover only the golden paths (incident → WO → evidence → closure).</p>
+    </div>
+  </div>
+
+  <h3>What we don't test</h3>
+  <ul>
+    <li>Don't unit-test trivial getters/setters or pure mappings.</li>
+    <li>Don't mock the database in integration tests — use a real Postgres in Docker.</li>
+    <li>Don't write snapshot tests for UI unless the component is purely presentational.</li>
+  </ul>
+
+  <div class="callout warn">
+    <strong>Coverage isn't the metric.</strong> A change with 100% coverage and no integration test is weaker than a change with 60% coverage and a real end-to-end check. We measure tests by the bugs they would have caught.
+  </div>
+</section>
+
+<!-- ============ STANDARDS ============ -->
+<section id="standards">
+  <h2><span class="sec-num">J</span>Code standards</h2>
+  <p class="section-lede">Automated where possible. The tools are the source of truth — don't argue about formatting.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Formatting</h4>
+      <p><strong>Prettier</strong> on save, enforced in CI. No manual formatting debates.</p>
+    </div>
+    <div class="card">
+      <h4>Linting</h4>
+      <p><strong>ESLint</strong> with the project config. Warnings are errors in CI.</p>
+    </div>
+    <div class="card">
+      <h4>Types</h4>
+      <p><strong>TypeScript strict</strong> across everything. Shared types live in <span class="mono">packages/domain-types</span>.</p>
+    </div>
+    <div class="card">
+      <h4>Imports</h4>
+      <p>Workspace-relative imports (<span class="mono">@hoc/...</span>). No deep imports across service boundaries.</p>
+    </div>
+    <div class="card">
+      <h4>File size</h4>
+      <p>Aim for &lt; 300 lines per file; split when a file grows two responsibilities.</p>
+    </div>
+    <div class="card">
+      <h4>Comments</h4>
+      <p>Write the WHY, never the WHAT. If the code needs a comment to explain what it does, rename the variables.</p>
+    </div>
+  </div>
+
+  <h3>Pre-commit hook</h3>
+  <pre><code># installed via husky + lint-staged
+pre-commit:
+  - prettier --check
+  - eslint --max-warnings 0
+  - tsc --noEmit
+  - related unit tests</code></pre>
+</section>
+
+<!-- ============ DATA & APIS ============ -->
+<section id="data">
+  <h2><span class="sec-num">K</span>Data &amp; API contracts</h2>
+  <p class="section-lede">The database and the API are the contracts that bind us. Changes to them deserve extra care.</p>
+
+  <h3>Database migrations</h3>
+  <ul>
+    <li>One migration per PR; each migration is <strong>reversible</strong> (<span class="mono">up</span> and <span class="mono">down</span>).</li>
+    <li>For destructive changes (drop column, drop table): two-PR pattern — first stop writing, ship, then drop in a follow-up.</li>
+    <li>Add an index in the same PR as the query that needs it.</li>
+    <li>Never edit a migration that's already been merged — write a new one.</li>
+    <li>Test the migration on a snapshot of dev data before opening the PR.</li>
+  </ul>
+
+  <h3>API changes</h3>
+  <ul>
+    <li>OpenAPI spec is updated <strong>in the same PR</strong> as the implementation.</li>
+    <li>Generated SDK is regenerated and committed.</li>
+    <li>Additive changes are fine. Breaking changes require a deprecation period and a version bump.</li>
+    <li>All mutating endpoints must accept an <strong>idempotency key</strong> — this is non-negotiable for the offline sync path.</li>
+  </ul>
+
+  <h3>Service boundaries</h3>
+  <div class="callout">
+    <strong>Each service owns its tables.</strong> If your code needs data from another service's table, call the service's API or subscribe to its events. Cross-service JOINs in the database are a blocking review comment.
+  </div>
+
+  <h3>Secrets</h3>
+  <ul>
+    <li>Never commit a real key, token, or password. Pre-commit hook blocks common patterns.</li>
+    <li>Local: <span class="mono">.env.local</span> (gitignored). Cloud: managed in the secrets store, injected at runtime.</li>
+    <li>If a secret leaks, rotate it immediately and tell the team — no blame, just rotation.</li>
+  </ul>
+</section>
+
+<!-- ============ COMMUNICATION ============ -->
+<section id="comms">
+  <h2><span class="sec-num">L</span>Communication &amp; claiming a feature</h2>
+  <p class="section-lede">With a 2–3 person team, ceremony is the enemy. Lightweight rituals, high transparency.</p>
+
+  <h3>Claiming a feature</h3>
+  <ol>
+    <li>Pick a feature with status <span class="pill pill-open">Open</span>, priority you can take, and no unmet dependency.</li>
+    <li>Post in the team channel: <em>"Taking F-021 incident capture screen. Estimate: 3 days."</em></li>
+    <li>Move the status to <span class="pill pill-claimed">Claimed</span> on the board (or update this page if that's where the team tracks state).</li>
+    <li>When you open the draft PR, move to <span class="pill pill-progress">In&nbsp;progress</span>. When ready: <span class="pill pill-review">In&nbsp;review</span>. After merge: <span class="pill pill-done">Done</span>.</li>
+  </ol>
+
+  <h3>Daily async standup</h3>
+  <p>One post per person, before noon, three lines:</p>
+  <pre><code>Yesterday: shipped F-020 backend; opened PR for F-022 triage screen.
+Today:     review F-021; start F-023 incident map.
+Blockers:  need design decision on duplicate-merge UX — will DM Owner.</code></pre>
+
+  <h3>Weekly sync (30 min)</h3>
+  <ul>
+    <li>Walk the board: what shipped, what's stuck, what's next.</li>
+    <li>Re-prioritise if reality has changed (it usually has).</li>
+    <li>One architectural topic per week — keep the technical debt conversation alive.</li>
+  </ul>
+
+  <h3>Avoiding collisions</h3>
+  <div class="do-dont">
+    <div class="do">
+      <h4>Do</h4>
+      <ul>
+        <li>Claim before you start; if you abandon, un-claim.</li>
+        <li>Touch a shared file (<span class="mono">domain-types</span>, <span class="mono">api-client</span>)? Mention it in standup.</li>
+        <li>Rebase on <span class="mono">main</span> daily.</li>
+        <li>Pair-programme on the hard 30 min of a feature, not the easy 8 hours.</li>
+      </ul>
+    </div>
+    <div class="dont">
+      <h4>Don't</h4>
+      <ul>
+        <li>Don't silently start a feature someone else might be eyeing.</li>
+        <li>Don't sit on a PR for more than a working day without a status update.</li>
+        <li>Don't let a branch live longer than the feature you're building.</li>
+        <li>Don't refactor adjacent code in a feature PR — open a separate <span class="mono">refactor/</span> PR.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout good">
+    <strong>One sentence to take away:</strong> small features, short branches, fast reviews, honest commits. Everything else is detail.
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <strong>Highway Operations Command — Engineering Playbook</strong><br>
+  v1.0 &middot; 2026-05-24 &middot; Living document — propose changes via a <span class="mono">docs/</span> PR.
+</footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+Generate the project structure for the highway maintenance operations platform.
+
+Preferred stack:
+- Frontend:
+- Backend:
+- Database:
+- Mobile:
+- Hosting:
+
+Create:
+- Folder structure
+- Domain-driven architecture
+- API structure
+- Service boundaries
+- Database modules
+- Authentication modules
+- Geospatial modules
+
+Do not generate full implementation yet.
+Focus on clean architecture.

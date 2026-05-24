@@ -1,0 +1,25 @@
+You are building an Operations Command System for Highway Maintenance.
+It is:
+
+distributed field operations
+geo-based work execution
+workforce coordination
+auditability
+contractor compliance
+escalation management
+progress tracking over 200 km
+
+Define the Operational Model FIRST
+
+Before touching UI or code, use Claude to define the operating model.
+
+Your highway maintenance business has:
+
+Layer	Responsibility
+Owner	Overall contract accountability
+Zone Engineer	Responsible for ~50 km stretch
+Supervisor	Coordinates field teams
+Field Workers	Execute physical tasks
+QA/Safety	Verify completion
+Authority/NHAI	External stakeholder
+

@@ -1,0 +1,17 @@
+his system is NOT a generic Jira/Trello clone.
+
+It is closer to:
+
+field operations system
+GIS-enabled workflow system
+infrastructure asset maintenance system
+dispatch + execution platform
+
+You should model it around:
+
+Core Concept
+
+Highway Segment → Incident → Work Order → Workforce Mobilization → Evidence → Closure
+
+That is the heart of the system.
+

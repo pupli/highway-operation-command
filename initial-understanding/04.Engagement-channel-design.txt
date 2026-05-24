@@ -1,0 +1,28 @@
+Design the UI/UX structure for the highway maintenance operations platform.
+
+The system should support:
+- Mobile app for field engineers
+- Mobile app for supervisors/workers
+- Web dashboard for management
+
+Design:
+1. Dashboard
+2. Incident reporting screen
+3. Work order screen
+4. Map-based tracking screen
+5. SLA monitoring screen
+6. Engineer performance screen
+7. Daily work log
+8. Photo upload workflow
+9. Emergency response workflow
+10. Escalation management workflow
+
+For each screen provide:
+- Purpose
+- Key fields
+- User actions
+- Mobile considerations
+- Offline capability considerations
+
+Do not generate frontend code yet.
+Focus on functional design.

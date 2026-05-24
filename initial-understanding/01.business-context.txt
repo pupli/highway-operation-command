@@ -1,0 +1,64 @@
+Highway Maintenance Operations System - Business Context
+
+
+You are an expert in highway maintenance operations, field workforce management, and project management systems.
+
+I operate a highway maintenance contract business in India.
+
+Business Context:
+- We maintain approximately 200 km of national highway.
+- Different sections are assigned to engineers.
+- Typically one engineer handles every 50 km stretch.
+- Engineers coordinate field workers and contractors.
+- Work is distributed geographically.
+- Work items are highly dynamic and unique in nature.
+
+Types of work include:
+- Pothole repairs
+- Shoulder repairs
+- Drain cleaning
+- Tree/shrub cutting
+- Signboard installation
+- Road safety marker installation
+- Median cleaning
+- Emergency incident response
+- Barrier repairs
+- Waterlogging removal
+- Reflector maintenance
+
+Current Problems:
+- Work tracking is manual
+- Communication happens via WhatsApp and calls
+- No centralized visibility
+- Difficult to track completion
+- Difficult to measure engineer productivity
+- Difficult to monitor SLA compliance
+- No audit trail
+- No structured escalation system
+
+I want to build a digital operations management platform.
+
+The system should support:
+- Geographic work allocation
+- Task creation
+- Work assignment
+- Progress tracking
+- Photo evidence
+- GPS/location tagging
+- Worker tracking
+- Escalation management
+- SLA monitoring
+- Dashboard reporting
+- Mobile-first operations
+
+Your task:
+1. Understand the business deeply
+2. Identify operational workflows
+3. Identify actors and responsibilities
+4. Identify key data entities
+5. Identify risks and edge cases
+6. Suggest the best architecture approach
+7. Suggest how to model the system operationally
+
+Do NOT generate code yet.
+Focus on operational modeling first.

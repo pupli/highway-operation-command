@@ -1,0 +1,29 @@
+Based on the highway maintenance business context, design the complete operational workflow.
+
+Cover:
+1. Incident identification
+2. Work order creation
+3. Engineer assignment
+4. Workforce mobilization
+5. Material allocation
+6. Site execution
+7. Quality verification
+8. Closure process
+9. Escalation handling
+10. Emergency response handling
+
+For each step provide:
+- Trigger
+- Responsible role
+- Inputs
+- Outputs
+- SLA expectations
+- Possible failure scenarios
+
+Then design:
+- Daily operational cycle
+- Weekly review cycle
+- Emergency escalation cycle
+- Reporting cycle
+
+Output in structured operational format.

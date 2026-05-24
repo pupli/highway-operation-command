@@ -1,0 +1,31 @@
+Design the technical architecture for the highway maintenance operations platform.
+
+Requirements:
+- Mobile-first
+- GPS enabled
+- Offline-first capability
+- Photo uploads
+- Geospatial support
+- Scalable for multiple highway contracts
+- Real-time updates
+- Role-based access
+- Audit trail
+- SLA tracking
+- Dashboard analytics
+
+Recommend:
+- Frontend stack
+- Backend stack
+- Database
+- Geospatial technology
+- Mobile technology
+- Cloud architecture
+- Authentication model
+- Notification system
+- File storage approach
+
+Also explain:
+- How offline synchronization should work
+- How GPS tracking should work
+- How image evidence should work
+- How AI can later be integrated

@@ -1,0 +1,33 @@
+Design the complete data model for the highway maintenance operations platform.
+
+Core entities should include:
+- Highway Segment
+- Engineer
+- Worker
+- Contractor
+- Work Order
+- Incident
+- Asset
+- Safety Item
+- Inspection
+- Vehicle
+- Equipment
+- Material
+- Escalation
+- SLA
+- GPS Location
+- Photo Evidence
+
+For each entity provide:
+- Purpose
+- Attributes
+- Relationships
+- Status lifecycle
+- Audit requirements
+
+Also identify:
+- Which entities are transactional
+- Which entities are master data
+- Which entities require geospatial capability
+
+Design this for scalability and future AI analytics.
